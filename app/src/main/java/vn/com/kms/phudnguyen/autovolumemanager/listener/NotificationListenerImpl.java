@@ -20,7 +20,7 @@ import java.util.Date;
 public class NotificationListenerImpl extends NotificationListenerService {
     private String TAG = this.getClass().getSimpleName();
     private Gson gson;
-    private int currentVolume = 0;
+    private int beforeMuted = 0;
     private static String NOTIFICATION_CHANNEL_ID = "1123123";
 
     @Override
@@ -54,16 +54,16 @@ public class NotificationListenerImpl extends NotificationListenerService {
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
 
         b.setOngoing(true)
-                .setContentTitle("Auto Volume Manager")
-                .setContentText("Started at " + new Date())
-                .setTicker("Auto Volume Manager");
+            .setContentTitle("Auto Volume Manager")
+            .setContentText("Started at " + new Date())
+            .setTicker("Auto Volume Manager");
 
         return (b.build());
     }
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+        final AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
         if (am == null) {
             Log.w(TAG, "Fail to get audio manager");
             return;
@@ -73,31 +73,48 @@ public class NotificationListenerImpl extends NotificationListenerService {
         Notification notification = sbn.getNotification();
         Log.i(TAG, "ID :" + sbn.getId() + "\t" + notification.tickerText + "\t" + sbn.getPackageName());
         if ("com.spotify.music".equals(sbn.getPackageName())) {
-            JsonObject json = gson.fromJson(gson.toJson(notification), JsonObject.class);
-            JsonObject mMap = json.getAsJsonObject("extras").getAsJsonObject("mMap");
-            String title = mMap.getAsJsonObject("android.title").get("mText").getAsString();
-            String subTitle = mMap.getAsJsonObject("android.text").get("mText").getAsString();
+
+            String title = null;
+            String subTitle = null;
+
+            try {
+                String details = gson.toJson(notification);
+                JsonObject json = gson.fromJson(details, JsonObject.class);
+                JsonObject mMap = json.getAsJsonObject("extras").getAsJsonObject("mMap");
+                title = mMap.getAsJsonObject("android.title").get("mText").getAsString();
+                subTitle = mMap.getAsJsonObject("android.text").get("mText").getAsString();
+            } catch (Exception e) {
+                title = notification.extras.get("android.title") + "";
+                subTitle = notification.extras.get("android.text") + "";
+            }
             if ("Advertisement".contentEquals(title)) {
                 int volume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
                 if (volume <= 0) {
                     return;
                 }
-                currentVolume = volume;
+                beforeMuted = volume;
                 // Mute
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
             } else {
-                Log.i(TAG, "Current volume is " + am.getStreamVolume(AudioManager.STREAM_MUSIC));
-                Log.i(TAG, "title: " + title + "; subTitle: " + subTitle);
-
-                if (currentVolume <= 0) {
-                    Log.i(TAG, "Current volume is " + currentVolume + ".We don't touch volume here.");
+                Log.i(TAG, "Title: " + title + "; Subtitle: " + subTitle);
+                int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+                Log.i(TAG, "Current volume is " + currentVolume);
+                if (currentVolume > 0) {
+                    Log.i(TAG, "We don't change volume if not muted.");
+                    beforeMuted = currentVolume;
+                    Log.i(TAG, "Cached volume = " + beforeMuted);
                     return;
                 }
-                am.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, 0);
+                Log.i(TAG, "Restoring volume to " + beforeMuted);
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, beforeMuted, 0);
             }
         }
     }
-
 
 
     @Override
