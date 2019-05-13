@@ -14,8 +14,14 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import vn.com.kms.phudnguyen.autovolumemanager.listener.database.DatabaseHelper;
+import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Event;
+import vn.com.kms.phudnguyen.autovolumemanager.listener.model.EventAction;
+import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
 
-import java.util.Date;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.util.*;
 
 public class NotificationListenerImpl extends NotificationListenerService {
     private String TAG = this.getClass().getSimpleName();
@@ -27,6 +33,7 @@ public class NotificationListenerImpl extends NotificationListenerService {
     public void onCreate() {
         super.onCreate();
         gson = new GsonBuilder().create();
+        DatabaseHelper.initialize(getApplicationContext());
     }
 
     @Override
@@ -42,6 +49,21 @@ public class NotificationListenerImpl extends NotificationListenerService {
             manager.createNotificationChannel(chan);
             startForeground(1990, buildNotification());
         }
+
+        Event event = new Event();
+        event.setEventId(UUID.randomUUID().toString());
+        event.setAction(EventAction.SERVICE_STARTED.name());
+        event.setTimestamp(new Date());
+        DatabaseHelper.getInstance().insertEvent(event, null);
+    }
+
+    @Override
+    public void onListenerDisconnected() {
+        Event event = new Event();
+        event.setEventId(UUID.randomUUID().toString());
+        event.setAction(EventAction.SERVICE_STOPPED.name());
+        DatabaseHelper.getInstance().insertEvent(event, null);
+        super.onListenerDisconnected();
     }
 
     @Override
@@ -54,9 +76,9 @@ public class NotificationListenerImpl extends NotificationListenerService {
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
 
         b.setOngoing(true)
-            .setContentTitle("Auto Volume Manager")
-            .setContentText("Started at " + new Date())
-            .setTicker("Auto Volume Manager");
+                .setContentTitle("Auto Volume Manager")
+                .setContentText("Started at " + new Date())
+                .setTicker("Auto Volume Manager");
 
         return (b.build());
     }
@@ -69,13 +91,21 @@ public class NotificationListenerImpl extends NotificationListenerService {
             return;
         }
 
-        Log.i(TAG, "**********  onNotificationPosted");
         Notification notification = sbn.getNotification();
         Log.i(TAG, "ID :" + sbn.getId() + "\t" + notification.tickerText + "\t" + sbn.getPackageName());
-        if ("com.spotify.music".equals(sbn.getPackageName())) {
 
-            String title = null;
-            String subTitle = null;
+        DatabaseHelper instance = DatabaseHelper.getInstance();
+
+        List<Rule> allRules = null;
+        try {
+            allRules = instance.getAllRulesByPackageName(sbn.getPackageName());
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException | ParseException e) {
+            Log.e(TAG, "Fail to query rules", e);
+            return;
+        }
+        for (Rule rule : allRules) {
+            String title;
+            String subTitle;
 
             try {
                 String details = gson.toJson(notification);
@@ -87,7 +117,10 @@ public class NotificationListenerImpl extends NotificationListenerService {
                 title = notification.extras.get("android.title") + "";
                 subTitle = notification.extras.get("android.text") + "";
             }
-            if ("Advertisement".contentEquals(title)) {
+
+            Log.i(TAG, "Title: " + title + "; Subtitle: " + subTitle);
+
+            if (rule.getText().contentEquals(title) && rule.getSubText().equals(subTitle)) {
                 int volume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
                 if (volume <= 0) {
                     return;
@@ -95,8 +128,16 @@ public class NotificationListenerImpl extends NotificationListenerService {
                 beforeMuted = volume;
                 // Mute
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+
+                Event event = new Event();
+                event.setEventId(UUID.randomUUID().toString());
+                event.setAction(EventAction.MUTED.name());
+                event.setRuleId(rule.getRuleId());
+                event.setTimestamp(new Date());
+                instance.insertEvent(event, null);
+
+                break;
             } else {
-                Log.i(TAG, "Title: " + title + "; Subtitle: " + subTitle);
                 int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
                 Log.i(TAG, "Current volume is " + currentVolume);
                 if (currentVolume > 0) {
@@ -112,6 +153,13 @@ public class NotificationListenerImpl extends NotificationListenerService {
                     //ignore
                 }
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, beforeMuted, 0);
+
+                Event event = new Event();
+                event.setEventId(UUID.randomUUID().toString());
+                event.setAction(EventAction.RESTORED.name());
+                event.setRuleId(rule.getRuleId());
+                event.setTimestamp(new Date());
+                instance.insertEvent(event, null);
             }
         }
     }
