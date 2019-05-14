@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -14,9 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import vn.com.kms.phudnguyen.autovolumemanager.R;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.database.DatabaseHelper;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.R;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;

@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.database;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.database;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Column {
+public @interface Table {
   String name() default "";
 }

@@ -6,7 +6,7 @@
         android:name="vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.RuleFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".listener.fragment.RuleFragment"
+        tools:context="vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.RuleFragment"
 >
     <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"

@@ -1,10 +1,10 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.model;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.database.Column;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.database.Column;
 
 import java.util.Date;
 

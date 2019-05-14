@@ -1,8 +1,7 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.database;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.database;
 
 import android.database.Cursor;
-import android.util.Log;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Constants;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Constants;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

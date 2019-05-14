@@ -2,8 +2,8 @@ package vn.com.kms.phudnguyen.autovolumemanager;
 
 import org.junit.Assert;
 import org.junit.Test;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.ListenerService;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.ListenerService;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import static org.junit.Assert.*;
 

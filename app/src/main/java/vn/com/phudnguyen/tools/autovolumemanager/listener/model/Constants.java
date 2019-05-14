@@ -1,6 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.model;
-
-import com.google.gson.GsonBuilder;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

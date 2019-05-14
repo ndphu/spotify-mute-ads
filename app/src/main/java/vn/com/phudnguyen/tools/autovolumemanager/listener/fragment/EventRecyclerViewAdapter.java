@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -9,16 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import vn.com.kms.phudnguyen.autovolumemanager.R;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.EventFragment.OnListFragmentInteractionListener;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Event;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.EventAction;
+import vn.com.phudnguyen.tools.autovolumemanager.R;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.EventFragment.OnListFragmentInteractionListener;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static vn.com.kms.phudnguyen.autovolumemanager.listener.model.Constants.DATE_FORMAT_TIME_ONLY_WITH_LOCAL_TIMEZONE;
-import static vn.com.kms.phudnguyen.autovolumemanager.listener.model.Constants.DATE_FORMAT_WITH_LOCAL_TIMEZONE;
+import static vn.com.phudnguyen.tools.autovolumemanager.listener.model.Constants.DATE_FORMAT_TIME_ONLY_WITH_LOCAL_TIMEZONE;
+import static vn.com.phudnguyen.tools.autovolumemanager.listener.model.Constants.DATE_FORMAT_WITH_LOCAL_TIMEZONE;
 
 /**
  * specified {@link OnListFragmentInteractionListener}.

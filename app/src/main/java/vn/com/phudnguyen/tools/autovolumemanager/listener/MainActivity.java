@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener;
+package vn.com.phudnguyen.tools.autovolumemanager.listener;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,16 +7,13 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
-import org.apache.commons.lang3.StringUtils;
-import vn.com.kms.phudnguyen.autovolumemanager.R;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.database.DatabaseHelper;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.EventFragment;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.HomeFragment;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.RuleFragment;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Event;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.R;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.EventFragment;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.HomeFragment;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.RuleFragment;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener, EventFragment.OnListFragmentInteractionListener {
     private String TAG = MainActivity.class.getName();

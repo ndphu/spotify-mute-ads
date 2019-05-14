@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="vn.com.kms.phudnguyen.autovolumemanager">
+          package="vn.com.phudnguyen.tools.autovolumemanager">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
@@ -12,7 +12,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <service
-                android:name=".listener.ListenerService"
+                android:name="vn.com.phudnguyen.tools.autovolumemanager.listener.ListenerService"
                 android:label="@string/app_name"
                 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -21,7 +21,7 @@
         </service>
 
         <activity
-                android:name=".listener.MainActivity"
+                android:name="vn.com.phudnguyen.tools.autovolumemanager.listener.MainActivity"
                 android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

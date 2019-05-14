@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.utils;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

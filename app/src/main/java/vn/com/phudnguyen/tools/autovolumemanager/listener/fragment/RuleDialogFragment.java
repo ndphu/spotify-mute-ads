@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
-import vn.com.kms.phudnguyen.autovolumemanager.R;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.database.DatabaseHelper;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.utils.GsonUtils;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.R;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.utils.GsonUtils;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.util.UUID;
 

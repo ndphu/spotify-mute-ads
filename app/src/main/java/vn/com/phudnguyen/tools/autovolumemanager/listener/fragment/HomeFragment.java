@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import org.apache.commons.lang3.StringUtils;
-import vn.com.kms.phudnguyen.autovolumemanager.R;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.ListenerService;
+import vn.com.phudnguyen.tools.autovolumemanager.R;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.ListenerService;
 
 public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;

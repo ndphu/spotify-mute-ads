@@ -6,7 +6,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".listener.MainActivity">
+        tools:context="vn.com.phudnguyen.tools.autovolumemanager.listener.MainActivity">
 
     <FrameLayout
             android:id="@+id/fragment_placeholder"

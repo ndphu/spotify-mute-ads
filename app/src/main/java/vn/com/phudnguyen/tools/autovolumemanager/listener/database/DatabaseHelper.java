@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener.database;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Event;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;

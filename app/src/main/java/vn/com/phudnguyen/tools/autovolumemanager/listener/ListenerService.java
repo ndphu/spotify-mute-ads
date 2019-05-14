@@ -1,4 +1,4 @@
-package vn.com.kms.phudnguyen.autovolumemanager.listener;
+package vn.com.phudnguyen.tools.autovolumemanager.listener;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -15,10 +15,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.database.DatabaseHelper;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Event;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.EventAction;
-import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
