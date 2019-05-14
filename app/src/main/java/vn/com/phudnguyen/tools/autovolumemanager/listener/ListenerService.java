@@ -44,6 +44,8 @@ public class ListenerService extends NotificationListenerService {
     public void onListenerConnected() {
         super.onListenerConnected();
 
+        Notification notification = buildNotification();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Default", NotificationManager.IMPORTANCE_NONE);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -51,8 +53,9 @@ public class ListenerService extends NotificationListenerService {
                 return;
             }
             manager.createNotificationChannel(chan);
-            startForeground(1990, buildNotification());
         }
+
+        startForeground(1990, notification);
 
         DatabaseHelper.getInstance().insertEvent(Event.builder()
                 .eventId(UUID.randomUUID().toString())
