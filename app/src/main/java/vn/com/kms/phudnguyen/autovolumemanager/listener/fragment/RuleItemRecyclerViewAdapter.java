@@ -12,14 +12,10 @@ import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class RuleItemRecyclerViewAdapter extends RecyclerView.Adapter<RuleItemRecyclerViewAdapter.ViewHolder> {
 
     private List<Rule> rules = new ArrayList<>();
-    private OnListFragmentInteractionListener mListener = null;
+    private OnListFragmentInteractionListener listener = null;
 
     RuleItemRecyclerViewAdapter() {
     }
@@ -40,10 +36,10 @@ public class RuleItemRecyclerViewAdapter extends RecyclerView.Adapter<RuleItemRe
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
+                if (null != listener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    listener.onListFragmentInteraction(holder.mItem);
                 }
             }
         });
@@ -62,8 +58,12 @@ public class RuleItemRecyclerViewAdapter extends RecyclerView.Adapter<RuleItemRe
         return rules;
     }
 
-    public OnListFragmentInteractionListener getmListener() {
-        return mListener;
+    public OnListFragmentInteractionListener getListener() {
+        return listener;
+    }
+
+    public void setListener(OnListFragmentInteractionListener listener) {
+        this.listener = listener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

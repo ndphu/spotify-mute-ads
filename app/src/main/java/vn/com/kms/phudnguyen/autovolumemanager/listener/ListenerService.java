@@ -14,6 +14,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.StringUtils;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.database.DatabaseHelper;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Event;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.model.EventAction;
@@ -21,9 +22,12 @@ import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
-public class NotificationListenerImpl extends NotificationListenerService {
+public class ListenerService extends NotificationListenerService {
     private String TAG = this.getClass().getSimpleName();
     private Gson gson;
     private int beforeMuted = 0;
@@ -50,19 +54,18 @@ public class NotificationListenerImpl extends NotificationListenerService {
             startForeground(1990, buildNotification());
         }
 
-        Event event = new Event();
-        event.setEventId(UUID.randomUUID().toString());
-        event.setAction(EventAction.SERVICE_STARTED.name());
-        event.setTimestamp(new Date());
-        DatabaseHelper.getInstance().insertEvent(event, null);
+        DatabaseHelper.getInstance().insertEvent(Event.builder()
+                .eventId(UUID.randomUUID().toString())
+                .action(EventAction.SERVICE_STARTED.name())
+                .build(), null);
     }
 
     @Override
     public void onListenerDisconnected() {
-        Event event = new Event();
-        event.setEventId(UUID.randomUUID().toString());
-        event.setAction(EventAction.SERVICE_STOPPED.name());
-        DatabaseHelper.getInstance().insertEvent(event, null);
+        DatabaseHelper.getInstance().insertEvent(Event.builder()
+                .eventId(UUID.randomUUID().toString())
+                .action(EventAction.SERVICE_STOPPED.name())
+                .build(), null);
         super.onListenerDisconnected();
     }
 
@@ -96,6 +99,24 @@ public class NotificationListenerImpl extends NotificationListenerService {
 
         DatabaseHelper instance = DatabaseHelper.getInstance();
 
+        String title;
+        String subTitle;
+
+        try {
+            String details = gson.toJson(notification);
+            JsonObject json = gson.fromJson(details, JsonObject.class);
+            JsonObject mMap = json.getAsJsonObject("extras").getAsJsonObject("mMap");
+            title = mMap.getAsJsonObject("android.title").get("mText").getAsString();
+            subTitle = mMap.getAsJsonObject("android.text").get("mText").getAsString();
+        } catch (Exception e) {
+            title = notification.extras.get("android.title") + "";
+            subTitle = notification.extras.get("android.text") + "";
+        }
+
+        Log.i(TAG, "Title: " + title + "; Subtitle: " + subTitle);
+
+
+
         List<Rule> allRules = null;
         try {
             allRules = instance.getAllRulesByPackageName(sbn.getPackageName());
@@ -103,24 +124,10 @@ public class NotificationListenerImpl extends NotificationListenerService {
             Log.e(TAG, "Fail to query rules", e);
             return;
         }
+
         for (Rule rule : allRules) {
-            String title;
-            String subTitle;
 
-            try {
-                String details = gson.toJson(notification);
-                JsonObject json = gson.fromJson(details, JsonObject.class);
-                JsonObject mMap = json.getAsJsonObject("extras").getAsJsonObject("mMap");
-                title = mMap.getAsJsonObject("android.title").get("mText").getAsString();
-                subTitle = mMap.getAsJsonObject("android.text").get("mText").getAsString();
-            } catch (Exception e) {
-                title = notification.extras.get("android.title") + "";
-                subTitle = notification.extras.get("android.text") + "";
-            }
-
-            Log.i(TAG, "Title: " + title + "; Subtitle: " + subTitle);
-
-            if (rule.getText().contentEquals(title) && rule.getSubText().equals(subTitle)) {
+            if (isRuleMatched(rule, title, subTitle)) {
                 int volume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
                 if (volume <= 0) {
                     return;
@@ -129,12 +136,11 @@ public class NotificationListenerImpl extends NotificationListenerService {
                 // Mute
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
 
-                Event event = new Event();
-                event.setEventId(UUID.randomUUID().toString());
-                event.setAction(EventAction.MUTED.name());
-                event.setRuleId(rule.getRuleId());
-                event.setTimestamp(new Date());
-                instance.insertEvent(event, null);
+                instance.insertEvent(Event.builder()
+                        .eventId(UUID.randomUUID().toString())
+                        .action(EventAction.MUTED.name())
+                        .ruleId(rule.getRuleId())
+                        .build(), null);
 
                 break;
             } else {
@@ -154,14 +160,18 @@ public class NotificationListenerImpl extends NotificationListenerService {
                 }
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, beforeMuted, 0);
 
-                Event event = new Event();
-                event.setEventId(UUID.randomUUID().toString());
-                event.setAction(EventAction.RESTORED.name());
-                event.setRuleId(rule.getRuleId());
-                event.setTimestamp(new Date());
-                instance.insertEvent(event, null);
+                instance.insertEvent(Event.builder()
+                        .eventId(UUID.randomUUID().toString())
+                        .action(EventAction.RESTORED.name())
+                        .ruleId(rule.getRuleId())
+                        .build(), null);
             }
         }
+    }
+
+    public static boolean isRuleMatched(Rule rule, String text, String subText) {
+        return Pattern.matches(StringUtils.isBlank(rule.getText()) ? ".*" : rule.getText(), text)
+                && Pattern.matches(StringUtils.isBlank(rule.getSubText()) ? ".*" : rule.getSubText(), subText);
     }
 
 

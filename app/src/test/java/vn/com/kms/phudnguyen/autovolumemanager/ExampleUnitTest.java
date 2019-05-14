@@ -1,6 +1,9 @@
 package vn.com.kms.phudnguyen.autovolumemanager;
 
+import org.junit.Assert;
 import org.junit.Test;
+import vn.com.kms.phudnguyen.autovolumemanager.listener.ListenerService;
+import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
 
 import static org.junit.Assert.*;
 
@@ -13,5 +16,24 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
+    }
+
+
+    @Test
+    public void testMatchingNotification() {
+        Rule matchingTitle = Rule.builder()
+                .text("Advertisement")
+                .build();
+
+        Assert.assertTrue(ListenerService.isRuleMatched(matchingTitle, "Advertisement", "SomeArtist"));
+        Assert.assertFalse(ListenerService.isRuleMatched(matchingTitle, "Advertisements", "Advertisement"));
+
+        Rule matchingSubtitle = Rule.builder()
+                .subText("Spotify.*")
+                .build();
+
+        Assert.assertTrue(ListenerService.isRuleMatched(matchingSubtitle, "", "Spotify"));
+        Assert.assertTrue(ListenerService.isRuleMatched(matchingSubtitle, "", "Spotify1"));
+        Assert.assertFalse(ListenerService.isRuleMatched(matchingSubtitle, "", "SSpotify"));
     }
 }

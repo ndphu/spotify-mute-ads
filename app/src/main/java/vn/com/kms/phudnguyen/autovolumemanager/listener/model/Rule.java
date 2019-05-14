@@ -1,9 +1,17 @@
 package vn.com.kms.phudnguyen.autovolumemanager.listener.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.database.Column;
 
 import java.util.Date;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Rule {
 
     public static final String TABLE_NAME = "rules";
@@ -44,63 +52,5 @@ public class Rule {
     @Column(name = COLUMN_TIMESTAMP)
     private Date timestamp;
 
-    public Rule() {
 
-    }
-
-    public Rule(String ruleId, String packageName, String text, String subText, Date timestamp) {
-        this.ruleId = ruleId;
-        this.packageName = packageName;
-        this.text = text;
-        this.subText = subText;
-        this.timestamp = timestamp;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getSubText() {
-        return subText;
-    }
-
-    public void setSubText(String subText) {
-        this.subText = subText;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getRuleId() {
-        return ruleId;
-    }
-
-    public void setRuleId(String ruleId) {
-        this.ruleId = ruleId;
-    }
 }

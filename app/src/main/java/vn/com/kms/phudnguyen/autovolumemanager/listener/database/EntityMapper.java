@@ -13,9 +13,9 @@ import java.util.List;
 
 import static android.database.Cursor.*;
 
-public class Mapper {
+public class EntityMapper {
 
-    private static final String TAG = Mapper.class.getName();
+    private static final String TAG = EntityMapper.class.getName();
 
     public static <T> List<T> mapToList(Cursor cursor, Class<T> clazz) throws IllegalAccessException, InstantiationException, InvocationTargetException, ParseException {
         List<T> result = new ArrayList<>();
@@ -41,7 +41,6 @@ public class Mapper {
                         }
                         case FIELD_TYPE_STRING: {
                             String dbValue = cursor.getString(columnIndex);
-                            Log.i(TAG, dbValue);
                             if (f.getType() == Date.class) {
                                 Date dbTime = Constants.DATE_FORMAT_UTC.parse(dbValue);
                                 f.set(rs, dbTime);

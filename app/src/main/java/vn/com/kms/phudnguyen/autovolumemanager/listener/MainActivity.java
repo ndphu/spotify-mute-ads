@@ -7,7 +7,9 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
+import org.apache.commons.lang3.StringUtils;
 import vn.com.kms.phudnguyen.autovolumemanager.R;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.database.DatabaseHelper;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.EventFragment;
@@ -16,7 +18,8 @@ import vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.RuleFragment;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Event;
 import vn.com.kms.phudnguyen.autovolumemanager.listener.model.Rule;
 
-public class MainActivity extends AppCompatActivity implements RuleFragment.OnListFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, EventFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener, EventFragment.OnListFragmentInteractionListener {
+    private String TAG = MainActivity.class.getName();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -51,11 +54,7 @@ public class MainActivity extends AppCompatActivity implements RuleFragment.OnLi
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    }
-
-    @Override
-    public void onListFragmentInteraction(Rule item) {
-
+        navigation.setSelectedItemId(R.id.navigation_home);
     }
 
     @Override

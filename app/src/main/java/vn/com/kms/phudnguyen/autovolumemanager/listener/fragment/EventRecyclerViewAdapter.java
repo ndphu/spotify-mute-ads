@@ -1,5 +1,8 @@
 package vn.com.kms.phudnguyen.autovolumemanager.listener.fragment;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -25,29 +28,34 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
 
     private List<Event> mValues = new ArrayList<>();
     private OnListFragmentInteractionListener mListener;
+    private Context context;
 
     public EventRecyclerViewAdapter() {
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        context = parent.getContext();
+        View view = LayoutInflater.from(context)
                 .inflate(R.layout.fragment_event, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mMainText.setText(mValues.get(position).getAction());
-        int textColor = getColorByAction(mValues.get(position).getAction());
-        if (textColor >= 0) {
-            holder.mMainText.setTextColor(textColor);
+        Event event = mValues.get(position);
+        holder.mItem = event;
+        holder.mMainText.setText(event.getAction());
+        if (EventAction.valueOf(event.getAction()).equals(EventAction.SERVICE_STARTED)) {
+            holder.mMainText.setTextColor(ContextCompat.getColor(context, R.color.serviceStartedColor));
+        } else if (EventAction.valueOf(event.getAction()).equals(EventAction.SERVICE_STOPPED)) {
+            holder.mMainText.setTextColor(ContextCompat.getColor(context, R.color.serviceStoppedColor));
+
         }
-        if (DateUtils.isToday(mValues.get(position).getTimestamp().getTime())) {
-            holder.mSubText.setText("Today at " + DATE_FORMAT_TIME_ONLY_WITH_LOCAL_TIMEZONE.format(mValues.get(position).getTimestamp()));
+        if (DateUtils.isToday(event.getTimestamp().getTime())) {
+            holder.mSubText.setText("Today at " + DATE_FORMAT_TIME_ONLY_WITH_LOCAL_TIMEZONE.format(event.getTimestamp()));
         } else {
-            holder.mSubText.setText(DATE_FORMAT_WITH_LOCAL_TIMEZONE.format(mValues.get(position).getTimestamp()));
+            holder.mSubText.setText(DATE_FORMAT_WITH_LOCAL_TIMEZONE.format(event.getTimestamp()));
         }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -63,9 +71,11 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
     private int getColorByAction(String action) {
         switch (EventAction.valueOf(action)) {
             case SERVICE_STARTED:
-                return R.color.serviceStartedColor;
+                return Color.GREEN;
+//                return ContextCompat.getColor(context, R.color.serviceStartedColor);
             case SERVICE_STOPPED:
-                return R.color.serviceStoppedColor;
+//                return ContextCompat.getColor(context, R.color.serviceStoppedColor);
+                return Color.RED;
             default:
                 return -1;
         }

@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getName();
 
     private static final String DB_NAME = "auto-volume-manager";
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 6;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -30,16 +30,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(Rule.CREATE_TABLE);
         db.execSQL(Event.CREATE_TABLE);
 
-        insertRule(new Rule(UUID.randomUUID().toString(),
-                "com.spotify.music",
-                "Advertisement",
-                "Spotify",
-                new Date()), db);
-        insertRule(new Rule(UUID.randomUUID().toString(),
-                "com.spotify.music",
-                "Spotify",
-                "Spotify",
-                new Date()), db);
+        insertRule(Rule.builder()
+                .ruleId(UUID.randomUUID().toString())
+                .packageName("com.spotify.music")
+                .text("Advertisement")
+                .subText(".*")
+                .build(), db);
+        insertRule(Rule.builder()
+                .ruleId(UUID.randomUUID().toString())
+                .packageName("com.spotify.music")
+                .text(".*")
+                .subText("Spotify")
+                .build(), db);
     }
 
     @Override
@@ -52,7 +54,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    private void insertRule(Rule rule, SQLiteDatabase db) {
+    public void insertRule(Rule rule, SQLiteDatabase db) {
+        Log.i(TAG, "Inserting rule " + rule.getText() + " - " + rule.getSubText());
         if (db == null) {
             db = getWritableDatabase();
         }
@@ -73,7 +76,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+    }
 
+    public void updateRule(Rule rule, SQLiteDatabase db) {
+        Log.i(TAG, "Updating rule " + rule.getId() + "-" + rule.getText() + " - " + rule.getSubText());
+        if (db == null) {
+            db = getWritableDatabase();
+        }
+
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(Rule.COLUMN_RULE_ID, rule.getRuleId());
+            values.put(Rule.COLUMN_PACKAGE_NAME, rule.getPackageName());
+            values.put(Rule.COLUMN_TEXT, rule.getText());
+            values.put(Rule.COLUMN_SUB_TEXT, rule.getSubText());
+            db.update(Rule.TABLE_NAME, values, "id = ?", new String[]{ rule.getId().toString() });
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "Fail to update rule by error", e);
+            throw e;
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public void insertEvent(Event event, SQLiteDatabase db) {
@@ -112,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 Event.COLUMN_ID + " desc", "25")) {
-            return Mapper.mapToList(cursor, Event.class);
+            return EntityMapper.mapToList(cursor, Event.class);
         } catch (Exception e) {
             Log.e(TAG, "Fail to query rules from DB", e);
             throw e;
@@ -128,7 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Rule.COLUMN_TEXT,
                 Rule.COLUMN_SUB_TEXT,
                 Rule.COLUMN_TIMESTAMP}, null, null, null, null, null)) {
-            return Mapper.mapToList(cursor, Rule.class);
+            return EntityMapper.mapToList(cursor, Rule.class);
         } catch (Exception e) {
             Log.e(TAG, "Fail to query rules from DB", e);
             throw e;
@@ -146,7 +171,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         Rule.COLUMN_TIMESTAMP},
                 Rule.COLUMN_PACKAGE_NAME + "=?",
                 new String[]{packageName}, null, null, null)) {
-            return Mapper.mapToList(cursor, Rule.class);
+            return EntityMapper.mapToList(cursor, Rule.class);
         } catch (Exception e) {
             Log.e(TAG, "Fail to query rules from DB", e);
             throw e;

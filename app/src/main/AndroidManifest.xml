@@ -12,7 +12,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <service
-                android:name=".listener.NotificationListenerImpl"
+                android:name=".listener.ListenerService"
                 android:label="@string/app_name"
                 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>

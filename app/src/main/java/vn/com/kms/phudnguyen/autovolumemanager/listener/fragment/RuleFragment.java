@@ -3,7 +3,10 @@ package vn.com.kms.phudnguyen.autovolumemanager.listener.fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,12 +30,10 @@ import java.util.List;
  */
 public class RuleFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
     private RuleItemRecyclerViewAdapter ruleAdapter;
+    private View rootLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,37 +61,79 @@ public class RuleFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
         ruleAdapter = new RuleItemRecyclerViewAdapter();
+        ruleAdapter.setListener(new OnListFragmentInteractionListener() {
+            @Override
+            public void onListFragmentInteraction(Rule item) {
+                FragmentManager fm = RuleFragment.this.getFragmentManager();
+                RuleDialogFragment dialog = RuleDialogFragment.newInstance(item);
+                dialog.setUpdateListener(new RuleDialogFragment.OnRuleUpdateCompletedListener() {
+                    @Override
+                    public void onCompleted() {
+                        reloadRules();
+                        Snackbar.make(rootLayout, "Rule saved successfully", Snackbar.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(Exception ex) {
+                        Snackbar.make(rootLayout, "Error occur: " + ex.getMessage(), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+                dialog.show(fm, "edit_rule_fragment");
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_rule_list, container, false);
+        rootLayout = inflater.inflate(R.layout.fragment_rule_list, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(ruleAdapter);
+        Context context = rootLayout.getContext();
+        RecyclerView recyclerView = rootLayout.findViewById(R.id.list);
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        return view;
+        recyclerView.setAdapter(ruleAdapter);
+
+
+
+        FloatingActionButton fab = rootLayout.findViewById(R.id.btn_add_rule);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fm = RuleFragment.this.getFragmentManager();
+                RuleDialogFragment dialog = RuleDialogFragment.newInstance();
+                dialog.setUpdateListener(new RuleDialogFragment.OnRuleUpdateCompletedListener() {
+                    @Override
+                    public void onCompleted() {
+                        reloadRules();
+                        Snackbar.make(rootLayout, "Rule saved successfully", Snackbar.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(Exception ex) {
+                        Snackbar.make(rootLayout, "Error occur: " + ex.getMessage(), Snackbar.LENGTH_LONG).show();;
+                    }
+                });
+                dialog.show(fm, "new_rule_fragment");
+            }
+        });
+
+
+        return rootLayout;
     }
 
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
+        reloadRules();
+    }
+
+    private void reloadRules() {
         new RuleLoaderTask(new RuleLoaderTask.RuleLoaderTaskCallback() {
             @Override
             public void onCompleted(List<Rule> rules) {
@@ -103,12 +146,9 @@ public class RuleFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     public interface OnListFragmentInteractionListener {
-
-        // TODO: Update argument type and name
         void onListFragmentInteraction(Rule item);
     }
 
