@@ -19,3 +19,7 @@
 .externalNativeBuild
 
 .idea
+
+fastlane/.env
+
+keys

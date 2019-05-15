@@ -3,6 +3,8 @@ package vn.com.kms.phudnguyen.autovolumemanager;
 import org.junit.Assert;
 import org.junit.Test;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.ListenerService;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import static org.junit.Assert.*;
@@ -35,5 +37,13 @@ public class ExampleUnitTest {
         Assert.assertTrue(ListenerService.isRuleMatched(matchingSubtitle, "", "Spotify"));
         Assert.assertTrue(ListenerService.isRuleMatched(matchingSubtitle, "", "Spotify1"));
         Assert.assertFalse(ListenerService.isRuleMatched(matchingSubtitle, "", "SSpotify"));
+    }
+
+    @Test
+    public void buildInActionExpressionTest() {
+        Assert.assertEquals("()", DatabaseHelper.buildActionsArray(null));
+        Assert.assertEquals("()", DatabaseHelper.buildActionsArray(new EventAction[]{}));
+        Assert.assertEquals("('MUTED')", DatabaseHelper.buildActionsArray(new EventAction[]{EventAction.MUTED}));
+        Assert.assertEquals("('MUTED','SERVICE_STARTED')", DatabaseHelper.buildActionsArray(new EventAction[]{EventAction.MUTED, EventAction.SERVICE_STARTED}));
     }
 }

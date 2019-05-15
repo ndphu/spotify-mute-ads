@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,12 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.List;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
 public class RuleFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -35,16 +30,9 @@ public class RuleFragment extends Fragment {
     private RuleItemRecyclerViewAdapter ruleAdapter;
     private View rootLayout;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public RuleFragment() {
 
     }
-
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static RuleFragment newInstance(int columnCount) {
         RuleFragment fragment = new RuleFragment();
         Bundle args = new Bundle();
@@ -98,6 +86,10 @@ public class RuleFragment extends Fragment {
         }
         recyclerView.setAdapter(ruleAdapter);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
 
         FloatingActionButton fab = rootLayout.findViewById(R.id.btn_add_rule);

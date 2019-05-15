@@ -8,6 +8,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import vn.com.phudnguyen.tools.autovolumemanager.R;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.EventFragment.OnListFragmentInteractionListener;
@@ -45,13 +46,29 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Event event = mValues.get(position);
         holder.mItem = event;
-        holder.mMainText.setText(event.getAction());
-        if (EventAction.valueOf(event.getAction()).equals(EventAction.SERVICE_STARTED)) {
-            holder.mMainText.setTextColor(ContextCompat.getColor(context, R.color.serviceStartedColor));
-        } else if (EventAction.valueOf(event.getAction()).equals(EventAction.SERVICE_STOPPED)) {
-            holder.mMainText.setTextColor(ContextCompat.getColor(context, R.color.serviceStoppedColor));
+        EventAction eventAction = EventAction.valueOf(event.getAction());
 
+        holder.mMainText.setText(eventAction.getDisplayText());
+
+        switch (eventAction) {
+            case MUTED:
+                holder.mImageView.setImageResource(R.drawable.ic_action_muted);
+                holder.mImageView.setColorFilter(ContextCompat.getColor(context, R.color.colorActionMuted));
+                break;
+            case RESTORED:
+                holder.mImageView.setImageResource(R.drawable.ic_action_restored);
+                holder.mImageView.setColorFilter(ContextCompat.getColor(context, R.color.colorActionRestored));
+                break;
+            case SERVICE_STARTED:
+                holder.mImageView.setImageResource(R.drawable.ic_service_started);
+                holder.mImageView.setColorFilter(ContextCompat.getColor(context, R.color.serviceStartedColor));
+                break;
+            case SERVICE_STOPPED:
+                holder.mImageView.setImageResource(R.drawable.ic_service_stopped);
+                holder.mImageView.setColorFilter(ContextCompat.getColor(context, R.color.serviceStoppedColor));
+                break;
         }
+
         if (DateUtils.isToday(event.getTimestamp().getTime())) {
             holder.mSubText.setText("Today at " + DATE_FORMAT_TIME_ONLY_WITH_LOCAL_TIMEZONE.format(event.getTimestamp()));
         } else {
@@ -106,13 +123,15 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         public final View mView;
         public final TextView mMainText;
         public final TextView mSubText;
+        public final ImageView mImageView;
         public Event mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mMainText = (TextView) view.findViewById(R.id.main_text);
-            mSubText = (TextView) view.findViewById(R.id.sub_text);
+            mMainText = view.findViewById(R.id.main_text);
+            mSubText = view.findViewById(R.id.sub_text);
+            mImageView = view.findViewById(R.id.imageView);
         }
 
         @Override

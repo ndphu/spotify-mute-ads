@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#303F9F</color>
-    <color name="colorPrimaryDark">#1A237E</color>
-    <color name="colorAccent">#FFA726</color>
-    <color name="serviceStartedColor">#178B00</color>
-    <color name="serviceStoppedColor">#9B0300</color>
+    <color name="colorPrimary">#ef6c00</color>
+    <color name="colorPrimaryDark">#e65100</color>
+    <color name="colorAccent">#ff6d00</color>
+    <color name="colorViewPagerTab">#fbe9e7</color>
+    <color name="serviceStartedColor">#558b2f</color>
+    <color name="serviceStoppedColor">#b71c1c</color>
+    <color name="colorActionMuted">#757575</color>
+    <color name="colorActionRestored">#ff6d00</color>
 </resources>

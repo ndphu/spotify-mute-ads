@@ -30,15 +30,13 @@ public class RuleItemRecyclerViewAdapter extends RecyclerView.Adapter<RuleItemRe
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = rules.get(position);
-        holder.mIdView.setText(rules.get(position).getText());
-        holder.mContentView.setText(rules.get(position).getSubText());
+        holder.mMainText.setText(rules.get(position).getText());
+        holder.mSubText.setText(rules.get(position).getSubText());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != listener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     listener.onListFragmentInteraction(holder.mItem);
                 }
             }
@@ -68,20 +66,20 @@ public class RuleItemRecyclerViewAdapter extends RecyclerView.Adapter<RuleItemRe
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView mMainText;
+        public final TextView mSubText;
         public Rule mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mMainText = (TextView) view.findViewById(R.id.main_text);
+            mSubText = (TextView) view.findViewById(R.id.sub_text);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mSubText.getText() + "'";
         }
     }
 }

@@ -11,14 +11,16 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import vn.com.phudnguyen.tools.autovolumemanager.R;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Constants;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.utils.GsonUtils;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.utils.PrefUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -29,14 +31,12 @@ import java.util.regex.Pattern;
 
 public class ListenerService extends NotificationListenerService {
     private String TAG = this.getClass().getSimpleName();
-    private Gson gson;
     private int beforeMuted = 0;
     private static String NOTIFICATION_CHANNEL_ID = "1123123";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        gson = new GsonBuilder().create();
         DatabaseHelper.initialize(getApplicationContext());
     }
 
@@ -83,7 +83,8 @@ public class ListenerService extends NotificationListenerService {
 
         b.setOngoing(true)
                 .setContentTitle("Auto Volume Manager")
-                .setContentText("Started at " + new Date())
+                .setContentText("Started at " + Constants.DATE_FORMAT_UTC.format(new Date()))
+                .setSmallIcon(R.drawable.ic_service_notification)
                 .setTicker("Auto Volume Manager");
 
         return (b.build());
@@ -106,8 +107,8 @@ public class ListenerService extends NotificationListenerService {
         String subTitle;
 
         try {
-            String details = gson.toJson(notification);
-            JsonObject json = gson.fromJson(details, JsonObject.class);
+            String details = GsonUtils.serialize(notification);
+            JsonObject json = GsonUtils.deserizalize(details, JsonObject.class);
             JsonObject mMap = json.getAsJsonObject("extras").getAsJsonObject("mMap");
             title = mMap.getAsJsonObject("android.title").get("mText").getAsString();
             subTitle = mMap.getAsJsonObject("android.text").get("mText").getAsString();
@@ -118,8 +119,6 @@ public class ListenerService extends NotificationListenerService {
 
         Log.i(TAG, "Title: " + title + "; Subtitle: " + subTitle);
 
-
-
         List<Rule> allRules = null;
         try {
             allRules = instance.getAllRulesByPackageName(sbn.getPackageName());
@@ -129,7 +128,6 @@ public class ListenerService extends NotificationListenerService {
         }
 
         for (Rule rule : allRules) {
-
             if (isRuleMatched(rule, title, subTitle)) {
                 int volume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
                 if (volume <= 0) {
@@ -156,10 +154,14 @@ public class ListenerService extends NotificationListenerService {
                     return;
                 }
                 Log.i(TAG, "Restoring volume to " + beforeMuted);
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException e) {
-                    //ignore
+
+                int sleepInterval = PrefUtils.getSleepInterval(getApplicationContext());
+                if (sleepInterval > 0) {
+                    try {
+                        Thread.sleep(sleepInterval);
+                    } catch (InterruptedException e) {
+                        //ignore
+                    }
                 }
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, beforeMuted, 0);
 

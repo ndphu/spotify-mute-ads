@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.phudnguyen.tools.autovolumemanager.R;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.ListenerService;
@@ -19,6 +20,7 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private Button btnEnableNotificationAccess;
+    private LinearLayout containerPermissionRequest;
 
     public HomeFragment() {
 
@@ -37,6 +39,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        containerPermissionRequest = view.findViewById(R.id.container_permission_access_required);
         btnEnableNotificationAccess = view.findViewById(R.id.btn_request_notification_access);
         btnEnableNotificationAccess.setOnClickListener(new View.OnClickListener() {
 
@@ -59,9 +62,9 @@ public class HomeFragment extends Fragment {
         String enabledNotificationListeners =
                 android.provider.Settings.Secure.getString(getActivity().getContentResolver(),"enabled_notification_listeners");
         if (StringUtils.contains(enabledNotificationListeners, ListenerService.class.getCanonicalName())) {
-            btnEnableNotificationAccess.setVisibility(View.GONE);
+            containerPermissionRequest.setVisibility(View.GONE);
         } else {
-            btnEnableNotificationAccess.setVisibility(View.VISIBLE);
+            containerPermissionRequest.setVisibility(View.VISIBLE);
         }
     }
 

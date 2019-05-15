@@ -11,9 +11,13 @@ import android.view.MenuItem;
 import vn.com.phudnguyen.tools.autovolumemanager.R;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.EventFragment;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.EventViewerFragment;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.HomeFragment;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.RuleFragment;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
+
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener, EventFragment.OnListFragmentInteractionListener {
     private String TAG = MainActivity.class.getName();
@@ -32,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                     fragment = new RuleFragment();
                     break;
                 case R.id.navigation_notifications:
-                    fragment = new EventFragment();
+                    fragment = new EventViewerFragment();
                     break;
             }
             if (fragment != null) {
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         super.onCreate(savedInstanceState);
         DatabaseHelper.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_home);
     }

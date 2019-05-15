@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.lang.reflect.InvocationTargetException;
@@ -142,6 +143,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e(TAG, "Fail to query rules from DB", e);
             throw e;
         }
+    }
+
+    public List<Event> getAllEventsByTypes(EventAction[] actions) throws IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
+        if (actions == null || actions.length == 0) {
+            return Collections.emptyList();
+        }
+        SQLiteDatabase db = getReadableDatabase();
+        try (Cursor cursor = db.query(Event.TABLE_NAME, new String[]{
+                        Event.COLUMN_ID,
+                        Event.COLUMN_EVENT_ID,
+                        Event.COLUMN_ACTION,
+                        Event.COLUMN_RULE_ID,
+                        Event.COLUMN_TIMESTAMP},
+                Event.COLUMN_ACTION + " IN " + buildActionsArray(actions),
+                null,
+                null,
+                null,
+                Event.COLUMN_ID + " desc", "25")) {
+            return EntityMapper.mapToList(cursor, Event.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Fail to query rules from DB", e);
+            throw e;
+        }
+    }
+
+    public static String buildActionsArray(EventAction[] actions) {
+        if (actions == null) {
+            return "()";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        for (int i = 0; i < actions.length; i++) {
+            sb.append("'").append(actions[i].name()).append("'");
+            if (i < actions.length - 1) {
+                sb.append(",");
+            }
+        }
+        sb.append(")");
+        return sb.toString();
     }
 
     public List<Rule> getAllRules() throws IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
