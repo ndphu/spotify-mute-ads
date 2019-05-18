@@ -37,6 +37,12 @@ public class ExampleUnitTest {
         Assert.assertTrue(ListenerService.isRuleMatched(matchingSubtitle, "", "Spotify"));
         Assert.assertTrue(ListenerService.isRuleMatched(matchingSubtitle, "", "Spotify1"));
         Assert.assertFalse(ListenerService.isRuleMatched(matchingSubtitle, "", "SSpotify"));
+
+        Rule chain = Rule.builder()
+                .text("The Chain.*")
+                .subText("")
+                .build();
+        Assert.assertTrue(ListenerService.isRuleMatched(chain, "The Chain", "Spotify"));
     }
 
     @Test

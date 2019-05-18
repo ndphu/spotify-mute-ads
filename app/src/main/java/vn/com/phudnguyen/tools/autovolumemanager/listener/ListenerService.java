@@ -3,6 +3,7 @@ package vn.com.phudnguyen.tools.autovolumemanager.listener;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -15,23 +16,19 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.phudnguyen.tools.autovolumemanager.R;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.database.DatabaseHelper;
-import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Constants;
-import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
-import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
-import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.*;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.utils.GsonUtils;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.utils.PrefUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class ListenerService extends NotificationListenerService {
     private String TAG = this.getClass().getSimpleName();
-    private int beforeMuted = 0;
+    private ServiceState serviceState = new ServiceState();
     private static String NOTIFICATION_CHANNEL_ID = "1123123";
 
     @Override
@@ -80,10 +77,14 @@ public class ListenerService extends NotificationListenerService {
 
     private Notification buildNotification() {
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP  | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         b.setOngoing(true)
-                .setContentTitle("Auto Volume Manager")
-                .setContentText("Started at " + Constants.DATE_FORMAT_UTC.format(new Date()))
+                .setContentTitle("Auto Volume Manager is running")
+                .setContentText("Tap to configure")
+                .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_service_notification)
                 .setTicker("Auto Volume Manager");
 
@@ -104,22 +105,33 @@ public class ListenerService extends NotificationListenerService {
         DatabaseHelper instance = DatabaseHelper.getInstance();
 
         String title;
-        String subTitle;
+        String content;
 
         try {
             String details = GsonUtils.serialize(notification);
             JsonObject json = GsonUtils.deserizalize(details, JsonObject.class);
             JsonObject mMap = json.getAsJsonObject("extras").getAsJsonObject("mMap");
             title = mMap.getAsJsonObject("android.title").get("mText").getAsString();
-            subTitle = mMap.getAsJsonObject("android.text").get("mText").getAsString();
+            content = mMap.getAsJsonObject("android.text").get("mText").getAsString();
         } catch (Exception e) {
             title = notification.extras.get("android.title") + "";
-            subTitle = notification.extras.get("android.text") + "";
+            content = notification.extras.get("android.text") + "";
         }
 
-        Log.i(TAG, "Title: " + title + "; Subtitle: " + subTitle);
+        Log.i(TAG, "Title: " + title + "; Content: " + content);
 
-        List<Rule> allRules = null;
+        if (PrefUtils.isNotificationLogEnabled(this, sbn.getPackageName())) {
+            NotificationLog notificationLog = NotificationLog.builder()
+                    .title(title)
+                    .content(content)
+                    .packageName(sbn.getPackageName())
+                    .build();
+            instance.insertNotificationLog(notificationLog, null);
+        } else {
+            Log.w(TAG, "notification logging is disabled");
+        }
+
+        List<Rule> allRules;
         try {
             allRules = instance.getAllRulesByPackageName(sbn.getPackageName());
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException | ParseException e) {
@@ -127,50 +139,72 @@ public class ListenerService extends NotificationListenerService {
             return;
         }
 
+        Rule matchedRule = null;
         for (Rule rule : allRules) {
-            if (isRuleMatched(rule, title, subTitle)) {
-                int volume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-                if (volume <= 0) {
-                    return;
-                }
-                beforeMuted = volume;
-                // Mute
-                am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
-
-                instance.insertEvent(Event.builder()
-                        .eventId(UUID.randomUUID().toString())
-                        .action(EventAction.MUTED.name())
-                        .ruleId(rule.getRuleId())
-                        .build(), null);
-
+            if (isRuleMatched(rule, title, content)) {
+                matchedRule = rule;
                 break;
-            } else {
-                int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-                Log.i(TAG, "Current volume is " + currentVolume);
-                if (currentVolume > 0) {
-                    Log.i(TAG, "We don't change volume if not muted.");
-                    beforeMuted = currentVolume;
-                    Log.i(TAG, "Cached volume = " + beforeMuted);
-                    return;
-                }
-                Log.i(TAG, "Restoring volume to " + beforeMuted);
-
-                int sleepInterval = PrefUtils.getSleepInterval(getApplicationContext());
-                if (sleepInterval > 0) {
-                    try {
-                        Thread.sleep(sleepInterval);
-                    } catch (InterruptedException e) {
-                        //ignore
-                    }
-                }
-                am.setStreamVolume(AudioManager.STREAM_MUSIC, beforeMuted, 0);
-
-                instance.insertEvent(Event.builder()
-                        .eventId(UUID.randomUUID().toString())
-                        .action(EventAction.RESTORED.name())
-                        .ruleId(rule.getRuleId())
-                        .build(), null);
             }
+        }
+
+        if (matchedRule != null) {
+            muteAndSaveState(am, instance, matchedRule);
+        } else {
+            if (isSamePackageOfMutedRule(sbn)) {
+                restoreVolumeAndSaveState(am, instance);
+            }
+        }
+    }
+
+    private boolean isSamePackageOfMutedRule(StatusBarNotification sbn) {
+        return serviceState.getAppliedRule() != null
+                && StringUtils.equals(serviceState.getAppliedRule().getPackageName(), sbn.getPackageName());
+    }
+
+    private void restoreVolumeAndSaveState(AudioManager am, DatabaseHelper instance) {
+        int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        Log.i(TAG, "Current volume is " + currentVolume);
+        if (currentVolume > 0) {
+            Log.i(TAG, "We don't change volume if not muted.");
+            serviceState.setBeforeMuted(currentVolume);
+            Log.i(TAG, "Cached volume = " + serviceState.getBeforeMuted());
+        } else {
+            Log.i(TAG, "Restoring volume to " + serviceState.getBeforeMuted());
+
+            int sleepInterval = PrefUtils.getSleepInterval(getApplicationContext());
+            if (sleepInterval > 0) {
+                try {
+                    Thread.sleep(sleepInterval);
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+            }
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, serviceState.getBeforeMuted(), 0);
+
+            instance.insertEvent(Event.builder()
+                    .eventId(UUID.randomUUID().toString())
+                    .action(EventAction.RESTORED.name())
+                    .ruleId(serviceState.getAppliedRule().getRuleId())
+                    .build(), null);
+
+            serviceState.setAppliedRule(null);
+        }
+    }
+
+    private void muteAndSaveState(AudioManager am, DatabaseHelper instance, Rule matchedRule) {
+        int volume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (volume > 0) {
+            // Mute
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+
+            instance.insertEvent(Event.builder()
+                    .eventId(UUID.randomUUID().toString())
+                    .action(EventAction.MUTED.name())
+                    .ruleId(matchedRule.getRuleId())
+                    .build(), null);
+
+            serviceState.setBeforeMuted(volume);
+            serviceState.setAppliedRule(matchedRule);
         }
     }
 

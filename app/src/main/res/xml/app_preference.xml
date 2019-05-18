@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+>
+    <PreferenceCategory
+            android:title="Monitoring">
+        <SwitchPreferenceCompat
+                app:key="notification_log_enabled"
+                app:title="Notification Log"
+                app:summary="Log notifications of other applications"
+        />
+        <Preference
+                app:dependency="notification_log_enabled"
+                app:title="Selected Applications"
+                app:key="monitoring_select_app"
+                app:summary="Select applications to monitor"
+        />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Volume Control">
+        <EditTextPreference
+                app:key="volume_control_sleep_interval"
+                app:title="Sleep Interval"
+        />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

@@ -8,11 +8,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.NotificationLog;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -20,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getName();
 
     private static final String DB_NAME = "auto-volume-manager";
-    private static final int DB_VERSION = 6;
+    private static final int DB_VERSION = 7;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -30,6 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(Rule.CREATE_TABLE);
         db.execSQL(Event.CREATE_TABLE);
+        db.execSQL(NotificationLog.CREATE_TABLE);
 
         insertRule(Rule.builder()
                 .ruleId(UUID.randomUUID().toString())
@@ -50,6 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + Rule.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Event.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + NotificationLog.TABLE_NAME);
 
         // Create tables again
         onCreate(db);
@@ -232,4 +237,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return INSTANCE;
     }
 
+    public void insertNotificationLog(NotificationLog notificationLog, SQLiteDatabase db) {
+        Log.i(TAG, "Inserting notification_log " + notificationLog.getTitle() + " - " + notificationLog.getContent());
+        if (db == null) {
+            db = getWritableDatabase();
+        }
+
+        db.beginTransaction();
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(NotificationLog.COLUMN_ID, notificationLog.getId());
+            values.put(NotificationLog.COLUMN_PACKAGE_NAME, notificationLog.getPackageName());
+            values.put(NotificationLog.COLUMN_TITLE, notificationLog.getTitle());
+            values.put(NotificationLog.COLUMN_CONTENT, notificationLog.getContent());
+            db.insertOrThrow(NotificationLog.TABLE_NAME, null, values);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "Fail to insert notification_log by error", e);
+            throw e;
+        } finally {
+            db.endTransaction();
+        }
+    }
 }

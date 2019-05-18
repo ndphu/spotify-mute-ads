@@ -27,16 +27,9 @@
                 android:text="@string/enable_notification_access"/>
     </LinearLayout>
 
-   <fragment android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:id="@+id/fragment_volume_controller"
-             android:layout_margin="8dp"
-             class="vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.VolumeControllerFragment"/>
-
     <fragment android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:id="@+id/fragment_settings"
-              android:layout_margin="8dp"
-              class="vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.SettingsFragment"/>
+              class="vn.com.phudnguyen.tools.autovolumemanager.listener.prefs.AppPreferenceFragment"
+              android:id="@+id/fragment_preference"/>
 
 </LinearLayout>
