@@ -9,8 +9,8 @@ android {
     applicationId "vn.com.phudnguyen.tools.autovolumemanager"
     minSdkVersion 19
     targetSdkVersion sdkVersion
-    versionCode 3
-    versionName "0.0.3"
+    versionCode 4
+    versionName "0.0.4"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
   }

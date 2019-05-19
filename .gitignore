@@ -25,4 +25,7 @@ fastlane/.env
 keys
 .idea
 
-app/release
+app/releasefastlane/README.md
+fastlane/report.xml
+app/release 
+fastlane/README.md
