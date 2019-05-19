@@ -29,7 +29,7 @@
 
     <fragment android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              class="vn.com.phudnguyen.tools.autovolumemanager.listener.prefs.AppPreferenceFragment"
+              class="vn.com.phudnguyen.tools.autovolumemanager.listener.prefs.MainPreferenceFragment"
               android:id="@+id/fragment_preference"/>
 
 </LinearLayout>

@@ -12,8 +12,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            tools:context="vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.EventFragment"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            tools:context="vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.event.EventFragment"
             tools:listitem="@layout/fragment_event"/>
 </FrameLayout>

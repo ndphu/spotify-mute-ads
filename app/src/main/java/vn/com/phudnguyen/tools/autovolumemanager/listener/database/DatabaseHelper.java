@@ -2,6 +2,8 @@ package vn.com.phudnguyen.tools.autovolumemanager.listener.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -9,6 +11,7 @@ import android.util.Log;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.NotificationLog;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.model.PackageInfo;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,9 +27,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "auto-volume-manager";
     private static final int DB_VERSION = 7;
+    private final Context context;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -36,17 +41,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(NotificationLog.CREATE_TABLE);
 
         insertRule(Rule.builder()
-                .ruleId(UUID.randomUUID().toString())
-                .packageName("com.spotify.music")
-                .text("Advertisement")
-                .subText(".*")
-                .build(), db);
+            .ruleId(UUID.randomUUID().toString())
+            .packageName("com.spotify.music")
+            .text("Advertisement")
+            .subText(".*")
+            .build(), db);
         insertRule(Rule.builder()
-                .ruleId(UUID.randomUUID().toString())
-                .packageName("com.spotify.music")
-                .text(".*")
-                .subText("Spotify")
-                .build(), db);
+            .ruleId(UUID.randomUUID().toString())
+            .packageName("com.spotify.music")
+            .text(".*")
+            .subText("Spotify")
+            .build(), db);
     }
 
     @Override
@@ -97,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(Rule.COLUMN_PACKAGE_NAME, rule.getPackageName());
             values.put(Rule.COLUMN_TEXT, rule.getText());
             values.put(Rule.COLUMN_SUB_TEXT, rule.getSubText());
-            db.update(Rule.TABLE_NAME, values, "id = ?", new String[]{ rule.getId().toString() });
+            db.update(Rule.TABLE_NAME, values, "id = ?", new String[]{rule.getId().toString()});
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.e(TAG, "Fail to update rule by error", e);
@@ -133,16 +138,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Event> getAllEvents() throws IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
         SQLiteDatabase db = getReadableDatabase();
         try (Cursor cursor = db.query(Event.TABLE_NAME, new String[]{
-                        Event.COLUMN_ID,
-                        Event.COLUMN_EVENT_ID,
-                        Event.COLUMN_ACTION,
-                        Event.COLUMN_RULE_ID,
-                        Event.COLUMN_TIMESTAMP},
-                null,
-                null,
-                null,
-                null,
-                Event.COLUMN_ID + " desc", "25")) {
+                Event.COLUMN_ID,
+                Event.COLUMN_EVENT_ID,
+                Event.COLUMN_ACTION,
+                Event.COLUMN_RULE_ID,
+                Event.COLUMN_TIMESTAMP},
+            null,
+            null,
+            null,
+            null,
+            Event.COLUMN_ID + " desc", "25")) {
             return EntityMapper.mapToList(cursor, Event.class);
         } catch (Exception e) {
             Log.e(TAG, "Fail to query rules from DB", e);
@@ -156,16 +161,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = getReadableDatabase();
         try (Cursor cursor = db.query(Event.TABLE_NAME, new String[]{
-                        Event.COLUMN_ID,
-                        Event.COLUMN_EVENT_ID,
-                        Event.COLUMN_ACTION,
-                        Event.COLUMN_RULE_ID,
-                        Event.COLUMN_TIMESTAMP},
-                Event.COLUMN_ACTION + " IN " + buildActionsArray(actions),
-                null,
-                null,
-                null,
-                Event.COLUMN_ID + " desc", "25")) {
+                Event.COLUMN_ID,
+                Event.COLUMN_EVENT_ID,
+                Event.COLUMN_ACTION,
+                Event.COLUMN_RULE_ID,
+                Event.COLUMN_TIMESTAMP},
+            Event.COLUMN_ACTION + " IN " + buildActionsArray(actions),
+            null,
+            null,
+            null,
+            Event.COLUMN_ID + " desc", "25")) {
             return EntityMapper.mapToList(cursor, Event.class);
         } catch (Exception e) {
             Log.e(TAG, "Fail to query rules from DB", e);
@@ -192,12 +197,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Rule> getAllRules() throws IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
         SQLiteDatabase db = getReadableDatabase();
         try (Cursor cursor = db.query(Rule.TABLE_NAME, new String[]{
-                Rule.COLUMN_ID,
-                Rule.COLUMN_RULE_ID,
-                Rule.COLUMN_PACKAGE_NAME,
-                Rule.COLUMN_TEXT,
-                Rule.COLUMN_SUB_TEXT,
-                Rule.COLUMN_TIMESTAMP}, null, null, null, null, null)) {
+            Rule.COLUMN_ID,
+            Rule.COLUMN_RULE_ID,
+            Rule.COLUMN_PACKAGE_NAME,
+            Rule.COLUMN_TEXT,
+            Rule.COLUMN_SUB_TEXT,
+            Rule.COLUMN_TIMESTAMP}, null, null, null, null, null)) {
             return EntityMapper.mapToList(cursor, Rule.class);
         } catch (Exception e) {
             Log.e(TAG, "Fail to query rules from DB", e);
@@ -208,14 +213,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Rule> getAllRulesByPackageName(String packageName) throws IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
         SQLiteDatabase db = getReadableDatabase();
         try (Cursor cursor = db.query(Rule.TABLE_NAME, new String[]{
-                        Rule.COLUMN_ID,
-                        Rule.COLUMN_RULE_ID,
-                        Rule.COLUMN_PACKAGE_NAME,
-                        Rule.COLUMN_TEXT,
-                        Rule.COLUMN_SUB_TEXT,
-                        Rule.COLUMN_TIMESTAMP},
-                Rule.COLUMN_PACKAGE_NAME + "=?",
-                new String[]{packageName}, null, null, null)) {
+                Rule.COLUMN_ID,
+                Rule.COLUMN_RULE_ID,
+                Rule.COLUMN_PACKAGE_NAME,
+                Rule.COLUMN_TEXT,
+                Rule.COLUMN_SUB_TEXT,
+                Rule.COLUMN_TIMESTAMP},
+            Rule.COLUMN_PACKAGE_NAME + "=?",
+            new String[]{packageName}, null, null, null)) {
             return EntityMapper.mapToList(cursor, Rule.class);
         } catch (Exception e) {
             Log.e(TAG, "Fail to query rules from DB", e);
@@ -258,6 +263,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw e;
         } finally {
             db.endTransaction();
+        }
+    }
+
+    public List<PackageInfo> getAllNotificationPackage() throws InvocationTargetException, InstantiationException, ParseException, IllegalAccessException {
+        Log.e(TAG, "Querying getAllNotificationPackage");
+        SQLiteDatabase db = getReadableDatabase();
+        try (Cursor cursor = db.query(NotificationLog.TABLE_NAME, new String[]{
+            NotificationLog.COLUMN_PACKAGE_NAME
+        }, null, null, NotificationLog.COLUMN_PACKAGE_NAME, null, null)) {
+            PackageManager pm = context.getPackageManager();
+            List<PackageInfo> pis = EntityMapper.mapToList(cursor, PackageInfo.class);
+            for (PackageInfo pi : pis) {
+                try {
+                    ApplicationInfo applicationInfo = pm.getApplicationInfo(pi.getPackageName(), 0);
+                    pi.setName(pm.getApplicationLabel(applicationInfo).toString());
+                    pi.setIcon(applicationInfo.loadIcon(pm));
+                } catch (PackageManager.NameNotFoundException ex) {
+                    pi.setName("Unknown Package Name");
+                    pi.setIcon(null);
+                }
+            }
+            return pis;
+        } catch (Exception e) {
+            Log.e(TAG, "Fail to query notification from DB", e);
+            throw e;
+        }
+    }
+
+    public List<NotificationLog> getNotificationLogForPackage(String packageName, int page, int size) throws InvocationTargetException, InstantiationException, ParseException, IllegalAccessException {
+        Log.e(TAG, "Querying getNotificationLogForPackage");
+        SQLiteDatabase db = getReadableDatabase();
+        try (Cursor cursor = db.query(NotificationLog.TABLE_NAME, new String[]{
+                NotificationLog.COLUMN_ID,
+                NotificationLog.COLUMN_TITLE,
+                NotificationLog.COLUMN_CONTENT,
+                NotificationLog.COLUMN_PACKAGE_NAME,
+                NotificationLog.COLUMN_TIMESTAMP
+            }, NotificationLog.COLUMN_PACKAGE_NAME + " = ? ", new String[]{packageName},
+            null,
+            null,
+            NotificationLog.COLUMN_ID + " desc",
+            (page * size) + "," + size)) {
+            return EntityMapper.mapToList(cursor, NotificationLog.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Fail to query getNotificationLogForPackage from DB", e);
+            throw e;
         }
     }
 }

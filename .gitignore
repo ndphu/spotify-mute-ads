@@ -24,3 +24,5 @@ fastlane/.env
 
 keys
 .idea
+
+app/release

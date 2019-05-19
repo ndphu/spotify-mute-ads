@@ -1,28 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto"
 >
-    <PreferenceCategory
-            android:title="Monitoring">
-        <SwitchPreferenceCompat
-                app:key="notification_log_enabled"
-                app:title="Notification Log"
-                app:summary="Log notifications of other applications"
-        />
-        <Preference
-                app:dependency="notification_log_enabled"
-                app:title="Selected Applications"
-                app:key="monitoring_select_app"
-                app:summary="Select applications to monitor"
-        />
-    </PreferenceCategory>
+  <PreferenceCategory
+      android:title="Notification Access">
+    <SwitchPreferenceCompat
+        android:key="@string/notification_access_permission_granted"
+        android:title="Allow Notification Access"
+        android:summaryOn="Permission granted"
+        android:summaryOff="Permission is not granted"
+    />
+  </PreferenceCategory>
+  <PreferenceCategory
+      android:title="Monitoring"
+      android:dependency="notification_access_permission_granted">
+    <SwitchPreferenceCompat
+        android:key="notification_log_enabled"
+        android:title="Notification Log"
+        android:summary="Log notifications of other applications"
+    />
+    <Preference
+        android:dependency="notification_log_enabled"
+        android:title="Selected Applications"
+        android:key="monitoring_select_app"
+        android:summary="Select applications to monitor"
+    />
+  </PreferenceCategory>
 
-    <PreferenceCategory android:title="Volume Control">
-        <EditTextPreference
-                app:key="volume_control_sleep_interval"
-                app:title="Sleep Interval"
-        />
-    </PreferenceCategory>
+  <PreferenceCategory android:title="Volume Control"
+                      android:dependency="notification_access_permission_granted">
+    <EditTextPreference
+        android:key="volume_control_sleep_interval"
+        android:title="Sleep Interval"
+        android:inputType="number"
+        android:defaultValue="250"
+        android:digits="0123456789"
+    />
+  </PreferenceCategory>
 
 
 </PreferenceScreen>

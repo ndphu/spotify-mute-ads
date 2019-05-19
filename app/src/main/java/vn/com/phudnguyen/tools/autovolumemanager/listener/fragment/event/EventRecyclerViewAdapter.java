@@ -1,4 +1,4 @@
-package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.event;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import vn.com.phudnguyen.tools.autovolumemanager.R;
-import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.EventFragment.OnListFragmentInteractionListener;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.event.EventFragment.OnListFragmentInteractionListener;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Event;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.EventAction;
 

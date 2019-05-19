@@ -6,11 +6,7 @@
         android:name="vn.com.kms.phudnguyen.autovolumemanager.listener.fragment.RuleFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        tools:context="vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.RuleFragment"
+        tools:context="vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.rule.RuleFragment"
 >
     <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"

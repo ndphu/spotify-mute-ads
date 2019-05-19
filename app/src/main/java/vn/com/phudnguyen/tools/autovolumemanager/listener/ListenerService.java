@@ -104,19 +104,8 @@ public class ListenerService extends NotificationListenerService {
 
         DatabaseHelper instance = DatabaseHelper.getInstance();
 
-        String title;
-        String content;
-
-        try {
-            String details = GsonUtils.serialize(notification);
-            JsonObject json = GsonUtils.deserizalize(details, JsonObject.class);
-            JsonObject mMap = json.getAsJsonObject("extras").getAsJsonObject("mMap");
-            title = mMap.getAsJsonObject("android.title").get("mText").getAsString();
-            content = mMap.getAsJsonObject("android.text").get("mText").getAsString();
-        } catch (Exception e) {
-            title = notification.extras.get("android.title") + "";
-            content = notification.extras.get("android.text") + "";
-        }
+        String title = notification.extras.get("android.title") + "";
+        String content = notification.extras.get("android.text") + "";
 
         Log.i(TAG, "Title: " + title + "; Content: " + content);
 

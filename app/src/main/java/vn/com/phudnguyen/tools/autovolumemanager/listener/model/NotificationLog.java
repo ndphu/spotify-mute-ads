@@ -1,12 +1,16 @@
 package vn.com.phudnguyen.tools.autovolumemanager.listener.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.database.Column;
 
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class NotificationLog {
     public static final String TABLE_NAME = "notification_log";

@@ -1,4 +1,4 @@
-package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.rule;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import vn.com.phudnguyen.tools.autovolumemanager.R;
-import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.RuleFragment.OnListFragmentInteractionListener;
+import vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.rule.RuleFragment.OnListFragmentInteractionListener;
 import vn.com.phudnguyen.tools.autovolumemanager.listener.model.Rule;
 
 import java.util.ArrayList;

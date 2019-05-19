@@ -1,4 +1,4 @@
-package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.rule;
 
 import android.content.Context;
 import android.os.AsyncTask;

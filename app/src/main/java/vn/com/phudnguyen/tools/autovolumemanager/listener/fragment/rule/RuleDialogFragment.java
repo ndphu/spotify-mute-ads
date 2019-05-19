@@ -1,4 +1,4 @@
-package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment;
+package vn.com.phudnguyen.tools.autovolumemanager.listener.fragment.rule;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
